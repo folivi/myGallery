@@ -3,23 +3,22 @@ class GalleryViewController < UICollectionViewController
   def loadView
     super
     @photos = []
-    get_pictures()
+    @pictures = []
     self.photos = []    
+    @pictures = get_pictures()    
     puts "called"
   end
   def viewDidLoad
     super
+    self.collectionView.backgroundColor = UIColor.whiteColor
+    collectionView.dataSource = self    
     collectionView.registerClass(Cell, forCellWithReuseIdentifier:"MY_CELL")    
-#    dir = NSBundle.mainBundle.bundlePath
-#    Dir.glob(File.join(dir, "*.jpg")) do |file|
-#      @photos << UIImage.imageNamed(File.basename(file))
-#    end
   end
 
   # UICollectionViewDataSource
   def collectionView(view, numberOfItemsInSection:section)
-    puts "@photos.count #{@photos.count} \n"
-    @photos.count
+    puts "self.photos.count #{self.photos.count} \n"
+    self.photos.count    
   end
 
   def collectionView(view, cellForItemAtIndexPath:path)
@@ -27,17 +26,15 @@ class GalleryViewController < UICollectionViewController
     #cell.imageView.image = self.photos[path.item]
     cell
   end
-  def get_pictures #(empty_array)
-    @pictures = []
+  def get_pictures
+    puts "get_pictures"
     url ="http://mambotime.lu/galleries.json"
-    base_url = "http://mambotime.lu/"
     BW::HTTP.get url do |response|
       json = BW::JSON.parse response.body.to_str
-      for line in json          
+      for line in json                  
         @pictures << line["picture"]["thumb"]["url"]
-        self.photos << line["picture"]["thumb"]["url"]        
-      end
+      end   
     end
-    @pictures      
-  end  
+    @pictures
+  end
 end
